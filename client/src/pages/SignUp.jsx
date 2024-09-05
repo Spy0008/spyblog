@@ -49,7 +49,7 @@ export default function SignUp() {
           {/* left */}
           <Link to="/" className="font-bold dark:text-white text-4xl">
             <span className="px-2 py-1 bg-gradient-to-r from-pink-500  to-orange-500 rounded-lg text-white ">Spy</span>
-            <span className="text-black">Blog's</span>
+            Blog's
           </Link>
           <p className='text-sm my-6'>
             We can’t wait to welcome you! By signing up, you’ll gain access to all our articles, community discussions, and updates. Let’s share the journey!

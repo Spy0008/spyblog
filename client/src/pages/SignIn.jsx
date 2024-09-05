@@ -49,7 +49,7 @@ export default function SignIn() {
           {/* left */}
           <Link to="/" className="font-bold dark:text-white text-4xl">
             <span className="px-2 py-1 bg-gradient-to-r from-pink-500  to-orange-500 rounded-lg text-white ">Spy</span>
-            <span className="text-black">Blog's</span>
+            Blog's
           </Link>
           <p className='text-sm my-6'>
             Join us again to enjoy fresh insights and engaging discussions.
