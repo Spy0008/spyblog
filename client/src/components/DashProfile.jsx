@@ -5,12 +5,13 @@ import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/
 import { app } from '../firebase';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-import { updateStart, updateSuccess, updateFailure, deleteUserStart, deleteUserSuccess, deleteUserFailure, signoutSuccess }from '../redux/user/userSlice'
+import { updateStart, updateSuccess, updateFailure, deleteUserStart, deleteUserSuccess, deleteUserFailure, signoutSuccess } from '../redux/user/userSlice'
 import { useDispatch } from "react-redux";
 import { HiOutlineExclamationCircle } from 'react-icons/hi'
+import { Link } from "react-router-dom";
 
 export default function DashProfile() {
-    const { currentUser, error } = useSelector((state) => state.user);
+    const { currentUser, error, loading } = useSelector((state) => state.user);
     const [imageFile, setImageFile] = useState(null);
     const [imageFileUrl, setImageFileUrl] = useState(null);
     const [imageFileUploadingProgress, setImageFileUploadingProgress] = useState(null);
@@ -117,7 +118,7 @@ export default function DashProfile() {
             if (!res.ok) {
                 dispatch(deleteUserFailure(data.message));
             } else {
-                dispatch(deleteUserSuccess(data));8
+                dispatch(deleteUserSuccess(data)); 8
             }
         } catch (error) {
             dispatch(deleteUserFailure(error.message));
@@ -170,9 +171,22 @@ export default function DashProfile() {
                 <TextInput onChange={handleChange} type='text' id="username" placeholder="username" defaultValue={currentUser.username} />
                 <TextInput onChange={handleChange} type='email' id="email" placeholder="email" defaultValue={currentUser.email} />
                 <TextInput onChange={handleChange} type='password' id="password" placeholder="password" />
-                <Button type="submit" outline gradientDuoTone='redToYellow' className=" active:scale-95">
-                    Update Profile
+                <Button disabled={loading || imageFileUplading} type="submit" outline gradientDuoTone='redToYellow' className=" active:scale-95 disabled:opacity-60">
+                    {loading ? 'Loading...' : 'Update Profile'}
                 </Button>
+                {
+                    currentUser.isAdmin && (
+                        <Link to={'/create-post'}>
+                            <Button
+                                type="button"
+                                gradientDuoTone='redToYellow'
+                                className="w-full active:scale-95"
+                            >
+                                Create a Blog
+                            </Button>
+                        </Link>
+                    )
+                }
             </form>
             <div className='text-red-600 flex justify-between mt-5'>
                 <span onClick={handleSignOut} className="cursor-pointer">Sign out</span>
