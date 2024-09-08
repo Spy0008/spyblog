@@ -6,12 +6,17 @@ import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/
 import { app } from '../firebase';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
+import { useNavigate } from 'react-router-dom'
 
 export default function CreatePost() {
     const [imageUploadProgress, setImageUploadProgress] = useState(null);
     const [imageUploadError, setImageUploadError] = useState(null);
-    const [formdata, setFormData] = useState({});
+    const [formData, setFormData] = useState({});
     const [file, setFile] = useState(null);
+    const [publishError, setPublishError] = useState(null);
+
+    const navigate = useNavigate();
+
     const handleUploadImage = async () => {
         try {
             if (!file) {
@@ -38,7 +43,7 @@ export default function CreatePost() {
                     getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
                         setImageUploadProgress(null);
                         setImageUploadError(null);
-                        setFormData({ ...formdata, image: downloadURL });
+                        setFormData({ ...formData, image: downloadURL });
                     });
                 }
             );
@@ -48,14 +53,44 @@ export default function CreatePost() {
             console.log(error);
         }
 
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const res = await fetch('/api/post/create', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                setPublishError(data.message);
+                return
+            }
+            if (res.ok) {
+                setPublishError(null);
+                navigate(`/post/${data.slug}`);
+            }
+
+        } catch (error) {
+            setPublishError("something wrong");
+
+        }
     }
+
+
     return (
         <div className='p-3 max-w-3xl mx-auto min-h-screen'>
             <h1 className='text-center my-7 text-3xl font-bold'>Create a Blog</h1>
-            <form className='flex flex-col gap-4'>
+            <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
                 <div className='flex flex-col gap-4 sm:flex-row justify-between'>
-                    <TextInput type='text' placeholder='Blog Title' required id='title' className='flex-1' />
-                    <Select>
+                    <TextInput type='text' placeholder='Blog Title' required id='title' className='flex-1' onChange={(e) => {
+                        setFormData({ ...formData, title: e.target.value })
+                    }} />
+                    <Select onChange={(e) => {
+                        setFormData({ ...formData, category: e.target.value })
+                    }}>
                         <option value='uncategorized'>Select a category</option>
                         <option value="technology">Technology</option>
                         <option value="lifestyle">Lifestyle</option>
@@ -115,11 +150,16 @@ export default function CreatePost() {
                         {imageUploadError}
                     </Alert>
                 )}
-                {formdata.image && (
-                    <img src={formdata.image} alt="upload" className='w-full h-72 object-cover' />
+                {formData.image && (
+                    <img src={formData.image} alt="upload" className='w-full h-72 object-cover' />
                 )}
-                <ReactQuill theme='snow' placeholder='write blog releted...' required className='mb-12 h-72' />
+                <ReactQuill theme='snow' placeholder='write blog releted...' required className='mb-12 h-72' onChange={(value) => {
+                    setFormData({ ...formData, content: value })
+                }} />
                 <Button type='submit' gradientDuoTone='pinkToOrange'>Publish</Button>
+                {
+                    publishError && <Alert className='mt-5' color='failure'>{publishError}</Alert>
+                }
             </form>
         </div>
     )
