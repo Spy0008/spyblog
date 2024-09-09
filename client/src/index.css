@@ -31,11 +31,11 @@ body{
     color: rgb(73, 149, 199 );
     text-decoration: none;
 }
-.dark.post-content a{
+.dark .post-content a{
     color: rgb(228, 99, 25);
     text-decoration: none;
 }
 .post-content a:hover{
-    color: rgb(73, 149, 199 );
+    color: rgb(233, 110, 10);
     text-decoration: underline;
 }
