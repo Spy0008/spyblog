@@ -2,10 +2,13 @@ import { useEffect, useState } from "react"
 import moment from 'moment';
 import { FaThumbsUp } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import { Button, Textarea } from "flowbite-react";
 
-export default function Comment({ comment, onLike }) {
+export default function Comment({ comment, onLike, onEdit }) {
+  const [editedContent, setEditedContent] = useState(comment.content);
   const { currentUser } = useSelector((state) => state.user)
   const [user, setUser] = useState({});
+  const [isEditing, setIsEditing] = useState(false);
   useEffect(() => {
     const getUser = async () => {
       try {
@@ -20,6 +23,31 @@ export default function Comment({ comment, onLike }) {
     };
     getUser();
   }, [comment]);
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    setEditedContent(comment.content);
+  };
+
+  const handleSave = async () => {
+    try {
+      const res = await fetch(`/api/comment/editComment/${comment._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: editedContent,
+        }),
+      });
+      if (res.ok) {
+        setIsEditing(false);
+        onEdit(comment, editedContent);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
   return (
     <div className="flex p-4 border-b dark:border-zinc-700 text-sm">
       <div className="flex-shrink-0 mr-3">
@@ -32,17 +60,56 @@ export default function Comment({ comment, onLike }) {
             {moment(comment.createdAt).fromNow()}
           </span>
         </div>
-        <p className="text-zinc-600 mb-2 dark:text-zinc-100">{comment.content}</p>
-        <div className="flex items-center pt-2 text-sm border-t dark:border-zinc-700 max-w-fit gap-2">
-          <button type="button" onClick={() => onLike(comment._id)} className={`text-gray-400 ${currentUser && comment.likes.includes(currentUser._id) && '!text-orange-500'}`}>
-            <FaThumbsUp className="text-sm"  />
-          </button>
-          <p className="text-zinc-600">
-            {
-              comment.numberOfLikes > 0 && comment.numberOfLikes +  " " + (comment.numberOfLikes === 1 ? "like" : "likes")
-            }
-          </p>
-        </div>
+        {isEditing ? (
+          <>
+            <Textarea
+              className="mb-2"
+              value={editedContent}
+              onChange={(e) => setEditedContent(e.target.value)}
+            />
+            <div className="flex justify-end gap-2 text-xs">
+              <Button
+                type="button"
+                size='sm'
+                gradientDuoTone='pinkToOrange'
+                onClick={handleSave}
+              >
+                Save
+              </Button>
+              <Button
+                type="button"
+                size='sm'
+                gradientDuoTone='pinkToOrange'
+                outline
+                onClick={() => setIsEditing(false)}
+              >
+                Cancel
+              </Button>
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="text-zinc-600 mb-2 dark:text-zinc-100">{comment.content}</p>
+            <div className="flex items-center pt-2 text-sm border-t dark:border-zinc-700 max-w-fit gap-2">
+              <button type="button" onClick={() => onLike(comment._id)} className={`text-gray-400 ${currentUser && comment.likes.includes(currentUser._id) && '!text-orange-500'}`}>
+                <FaThumbsUp className="text-sm" />
+              </button>
+              <p className="text-zinc-600">
+                {
+                  comment.numberOfLikes > 0 && comment.numberOfLikes + " " + (comment.numberOfLikes === 1 ? "like" : "likes")
+                }
+              </p>
+              {
+                currentUser && (currentUser._id === comment.userId || currentUser.isAdmin) && (
+                  <button type="button" className="text-zinc-600 hover:text-orange-500" onClick={handleEdit}>
+                    Edit
+                  </button>
+                )
+              }
+            </div>
+          </>
+
+        )}
       </div>
     </div>
   )
