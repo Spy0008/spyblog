@@ -7,7 +7,7 @@ export default function CallToAction() {
                 <img src="https://www.patterns.dev/img/reactjs/react-logo@3x.svg"/>
             </div>
             <div className="flex-1 justify-center flex flex-col">
-                <h2 className="text-2xl">What to learn more about React.js</h2>
+                <h2 className="text-2xl">Want to learn more about React.js</h2>
                 <p className="text-zinc-600 my-2">
                     Cheackout these resoures with articles.
                 </p>
