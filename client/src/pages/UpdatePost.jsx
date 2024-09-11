@@ -143,6 +143,7 @@ export default function UpdatePost() {
                         <option value="python">Python</option>
                         <option value="java">Java</option>
                         <option value="c-plus-plus">C++</option>
+                        <option value="nextjs">Nextjs</option>
                         <option value="ruby">Ruby</option>
                         <option value="php">PHP</option>
                         <option value="sql">SQL</option>

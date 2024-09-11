@@ -107,7 +107,6 @@ export default function CreatePost() {
                         <option value="beauty">Beauty</option>
                         <option value="home">Home</option>
                         <option value="parenting">Parenting</option>
-                        <option value="personal-development">Personal Development</option>
                         <option value="arts">Arts</option>
                         <option value="culture">Culture</option>
                         <option value="politics">Politics</option>
@@ -117,6 +116,7 @@ export default function CreatePost() {
                         <option value="python">Python</option>
                         <option value="java">Java</option>
                         <option value="c-plus-plus">C++</option>
+                        <option value="nextjs">Nextjs</option>
                         <option value="ruby">Ruby</option>
                         <option value="php">PHP</option>
                         <option value="sql">SQL</option>
